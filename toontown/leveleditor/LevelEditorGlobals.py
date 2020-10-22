@@ -29,7 +29,7 @@ COLOR_TYPES = ['wall_color', 'window_color',
                'door_awning_color', 'cornice_color',
                'prop_color']
 # The list of dna components maintained in the style attribute dictionary
-DNA_TYPES = ['wall', 'window', 'sign', 'door_double', 'door_single', 'cornice', 'toon_landmark',
+DNA_TYPES = ['wall', 'window', 'sign', 'door_double', 'door_single', 'cornice', 'toon_landmark', 'suit_wall', 'suit_landmark', 'cogdo_wall',
              'anim_building', 'prop', 'anim_prop', 'interactive_prop', 'street']
 BUILDING_TYPES = ['10_10', '20', '10_20', '20_10', '10_10_10',
                   '4_21', '3_22', '4_13_8', '3_13_9', '10',

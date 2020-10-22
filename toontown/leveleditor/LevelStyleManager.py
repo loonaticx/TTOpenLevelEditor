@@ -720,10 +720,13 @@ class LevelStyleManager:
             elif (dnaType == 'sign'):
                 dnaList = [''] + self.getCatalogCodes(dnaType)
             elif (dnaType == 'wall'):
+                # if (dnaType == 'suit_wall') or (dnaType == 'cogdo_wall'): #may not be needed
+                #    return
                 # Add in suit walls here for now
                 dnaList = ([None] +
-                           self.getCatalogCodesSuffix(dnaType, '_ur') +
-                           self.getCatalogCodesSuffix('suit_wall', '_ur'))
+                           self.getCatalogCodesSuffix(dnaType, '_ur') # +
+                           # self.getCatalogCodesSuffix('suit_wall', '_ur')
+                             )
             else:
                 dnaList = [None] + self.getCatalogCodesSuffix(dnaType, '_ur')
             # Add dnaCodes to attribute dictionary
@@ -740,6 +743,9 @@ class LevelStyleManager:
                 attribute.setMenu(self.createScrollMenu(dnaType, dnaList))
                 attribute.getMenu().createScrolledList()
             elif (dnaType == 'wall'):
+                attribute.setMenu(self.createDNAPieMenu(dnaType, dnaList,
+                                                        sf = 0.25))
+            elif (dnaType == 'suit_wall'):
                 attribute.setMenu(self.createDNAPieMenu(dnaType, dnaList,
                                                         sf = 0.25))
             elif (dnaType == 'sign'):
@@ -938,6 +944,9 @@ class LevelStyleManager:
         for i in range(numCodes):
             codes.append(DNASTORE.getCatalogCode(category, i))
         return codes
+
+    def printCatalog(self):
+        DNASTORE.printCatalog()
 
     def getCatalogCodesSuffix(self, category, suffix):
         codes = self.getCatalogCodes(category)

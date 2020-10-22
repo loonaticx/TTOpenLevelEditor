@@ -1632,6 +1632,21 @@ class LevelEditor(NodePath, DirectObject):
         # Now place new landmark building in the world
         self.initDNANode(newDNALandmarkBuilding)
 
+    def addSuitLandmark(self, landmarkType):
+        # Record new landmark type
+        self.setCurrent('suit_landmark_texture', landmarkType)
+        # And create new landmark building
+        block = self.getNextLandmarkBlock()
+        print(landmarkType)
+        newDNALandmarkBuilding = DNALandmarkBuilding(
+                'tb' + block + ':' + landmarkType + '_DNARoot')
+        newDNALandmarkBuilding.setCode(landmarkType)
+        # newDNALandmarkBuilding.setBuildingType(specialType)
+        newDNALandmarkBuilding.setPos(VBase3(0))
+        newDNALandmarkBuilding.setHpr(VBase3(0))
+        # Now place new landmark building in the world
+        self.initDNANode(newDNALandmarkBuilding)
+
     def addAnimBuilding(self, animBuildingType):
         print("addAnimBuilding %s " % animBuildingType)
         # Record new anim building type
@@ -4525,7 +4540,7 @@ class LevelEditorPanel(Pmw.MegaToplevel):
         streetsPage = self.notebook.add('Streets')
         toonBuildingsPage = self.notebook.add('Toon Bldgs')
         landmarkBuildingsPage = self.notebook.add('Landmark Bldgs')
-        # suitBuildingsPage = self.notebook.add('Suit Buildings')
+        SuitLandmarksPage = self.notebook.add('Suit Buildings')
         animBuildingsPage = self.notebook.add('Anim Bldgs')
         propsPage = self.notebook.add('Props')
         animPropsPage = self.notebook.add('Anim Props')
@@ -4631,10 +4646,6 @@ class LevelEditorPanel(Pmw.MegaToplevel):
         self.thirtyFootButton.pack(side = LEFT, expand = 1, fill = X)
         bf.pack(fill = X)
 
-        self.toonBuildingType = 'random'
-        self.toonBuildingSelector.selectitem(self.toonBuildingType)
-        self.toonBuildingSelector.pack(expand = 1, fill = BOTH)
-
         # LANDMARK BUILDINGS
         Label(landmarkBuildingsPage, text = 'Landmark Buildings',
               font = ('MSSansSerif', 14, 'bold')).pack(expand = 0)
@@ -4697,6 +4708,41 @@ class LevelEditorPanel(Pmw.MegaToplevel):
             self.landmarkBuildingSpecialSelector.selectitem(
                     LANDMARK_SPECIAL_TYPES[0])
             self.landmarkBuildingSpecialSelector.pack(expand = 0)
+
+        # SUIT BUILDINGS
+        Label(SuitLandmarksPage, text = 'Suit Buildings',
+              font = ('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        # Don't try to load this stuff if there is none
+        if self.styleManager.getCatalogCode('suit_landmark', 0) == "":
+            Label(SuitLandmarksPage, text = 'There are no landmark buildings in any of your loaded storages.').pack(expand = 0)
+        else:
+            self.addSuitLandmarkButton = Button(
+                    SuitLandmarksPage,
+                    text = 'ADD SUIT BUILDING',
+                    command = self.addSuitLandmark)
+            self.addSuitLandmarkButton.pack(fill = X, padx = 20, pady = 10)
+            bldgs = [s[14:] for s in self.styleManager.getCatalogCodes(
+                    'suit_landmark')]
+            bldgs.sort()
+            self.landmarkBuildingSelector = Pmw.ComboBox(
+                    SuitLandmarksPage,
+                    dropdown = 0,
+                    listheight = 200,
+                    labelpos = W,
+                    label_width = 12,
+                    label_anchor = W,
+                    label_text = 'Bldg type:',
+                    entry_width = 30,
+                    selectioncommand = self.setSuitLandmarkType,
+                    scrolledlist_items = bldgs
+                    )
+            self.landmarkType = self.styleManager.getCatalogCode(
+                    'suit_landmark', 0)
+            self.landmarkBuildingSelector.selectitem(
+                    self.styleManager.getCatalogCode('suit_landmark', 0)[14:])
+            self.landmarkBuildingSelector.pack(expand = 1, fill = BOTH)
+
+
 
         # ANIMATED BUILDINGS
         Label(animBuildingsPage, text = 'Animated Buildings',
@@ -5320,10 +5366,18 @@ class LevelEditorPanel(Pmw.MegaToplevel):
 
     def addFlatBuilding(self):
         self.levelEditor.addFlatBuilding(self.toonBuildingType)
+        
+    def addSuitLandmark(self):
+        self.levelEditor.addSuitLandmark(self.SuitLandmarkType)
+
+    def setSuitLandmarkType(self, name):
+        self.SuitLandmarkType = 'suit_landmark_' + name
+        self.levelEditor.setCurrent('suit_landmark_texture', self.SuitLandmarkType)
 
     def setLandmarkType(self, name):
         self.landmarkType = 'toon_landmark_' + name
         self.levelEditor.setCurrent('toon_landmark_texture', self.landmarkType)
+
 
     def signPanelSync(self):
         self.baselineMenu.delete(1, END)
